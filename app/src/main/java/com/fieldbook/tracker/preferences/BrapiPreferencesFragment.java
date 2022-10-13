@@ -1,6 +1,7 @@
 package com.fieldbook.tracker.preferences;
 
 import static android.app.Activity.RESULT_OK;
+import static androidx.preference.ListPreference.SimpleSummaryProvider;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -13,6 +14,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.fragment.app.DialogFragment;
+import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
@@ -21,6 +23,7 @@ import androidx.preference.PreferenceManager;
 
 import com.fieldbook.tracker.R;
 import com.fieldbook.tracker.activities.BrapiAuthActivity;
+import com.fieldbook.tracker.utilities.Utils;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
@@ -51,6 +54,8 @@ public class BrapiPreferencesFragment extends PreferenceFragmentCompat implement
     private NeutralButtonEditTextDialog brapiURLPreference;
     private NeutralButtonEditTextDialog brapiOIDCURLPreference;
     private ListPreference brapiOIDCFlow;
+    private ListPreference brapiVersion;
+    private BetterEditTextPreference brapiEbsOIDCURLPreference;
 
     //old base url must be in memory now, since NeutralEditText preference updates preferences
     private String oldBaseUrl = "";
@@ -95,7 +100,17 @@ public class BrapiPreferencesFragment extends PreferenceFragmentCompat implement
         brapiOIDCURLPreference = findPreference(GeneralKeys.BRAPI_OIDC_URL);
         brapiOIDCFlow = findPreference(GeneralKeys.BRAPI_OIDC_FLOW);
         if (brapiOIDCFlow != null) {
-            brapiOIDCFlow.setOnPreferenceChangeListener(this);
+            brapiOIDCFlow.setSummaryProvider(SimpleSummaryProvider.getInstance());
+            brapiOIDCFlow.setOnPreferenceChangeListener(this::setFlowPrefsVisibility);
+        }
+
+        brapiVersion = findPreference(GeneralKeys.BRAPI_VERSION);
+        if (brapiVersion != null) {
+            brapiVersion.setSummaryProvider(SimpleSummaryProvider.getInstance());
+        }
+        brapiEbsOIDCURLPreference = findPreference(GeneralKeys.BRAPI_EBS_OIDC_URL);
+        if (brapiEbsOIDCURLPreference != null) {
+            brapiEbsOIDCURLPreference.setSummaryProvider(EditTextPreference.SimpleSummaryProvider.getInstance());
         }
 
         //set saved urls, default to the test server
@@ -150,8 +165,16 @@ public class BrapiPreferencesFragment extends PreferenceFragmentCompat implement
                 return true;
             });
         }
-
+        setFlowPrefsVisibility(null, brapiOIDCFlow.getValue());
         setOidcFlowUi();
+    }
+
+    boolean setFlowPrefsVisibility(Preference preference, Object newValue) {
+        boolean isEBSFlow = newValue.toString().equals(getString(R.string.preferences_brapi_ebs_oidc_flow_oauth_code));
+        brapiEbsOIDCURLPreference.setVisible(isEBSFlow);
+        brapiOIDCURLPreference.setVisible(!isEBSFlow);
+        brapiURLPreference.setVisible(!isEBSFlow);
+        return true;
     }
 
     @Override
@@ -332,15 +355,15 @@ public class BrapiPreferencesFragment extends PreferenceFragmentCompat implement
     private void brapiAuth() {
 
         if (brapiOIDCURLPreference.getText().startsWith("http://")
-            || brapiURLPreference.getText().startsWith("http://")) {
+                || brapiURLPreference.getText().startsWith("http://")) {
 
-                if (mBrapiHttpWarningDialog != null
+            if (mBrapiHttpWarningDialog != null
                     && !mBrapiHttpWarningDialog.isShowing()) {
-                    mBrapiHttpWarningDialog.show();
-                }
+                mBrapiHttpWarningDialog.show();
+            }
 
         } else if (brapiOIDCURLPreference.getText().startsWith("https://")
-            && brapiURLPreference.getText().startsWith("https://")) {
+                && brapiURLPreference.getText().startsWith("https://")) {
 
             //without this check, urls without https:// or http:// were causing brapi auth to crash
             startAuth();

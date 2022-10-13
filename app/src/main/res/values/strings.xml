@@ -235,6 +235,7 @@
     <string name="preferences_brapi_oidc_flow">OIDC Flow</string>
     <string name="preferences_brapi_oidc_flow_oauth_implicit">OAuth2 Implicit Grant</string>
     <string name="preferences_brapi_oidc_flow_old_custom">Original Field Book Custom</string>
+    <string name="preferences_brapi_ebs_oidc_flow_oauth_code">EBS Authorization Code</string>
 
     <string name="preferences_naming">Naming</string>
     <string name="preferences_naming_photo">Photo name format</string>
@@ -785,5 +786,8 @@
     <string name="delete_photo_dialog_iv_content_description">Photo to be deleted.</string>
     <string name="trait_usb_camera_capture_content_description">Capture a photo.</string>
     <string name="trait_usb_camera_capture_button_text">Capture</string>
+
+    <string name="brapi_ebs_oidc_url_default">https//dev.ebsproject.org</string>
+    <string name="brapi_ebs_oidc_url_title">EBS URL Server</string>
 
 </resources>

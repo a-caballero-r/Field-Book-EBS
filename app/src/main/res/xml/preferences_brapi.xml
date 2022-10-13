@@ -91,6 +91,17 @@
             app:negativeButtonText="@android:string/cancel"
             app:neutralButtonText="@string/scan_barcode"/>
 
+        <com.fieldbook.tracker.preferences.BetterEditTextPreference
+            android:defaultValue="@string/brapi_ebs_oidc_url_default"
+            android:icon="@drawable/ic_adv_brapi_base"
+            android:inputType="textUri"
+            android:key="BRAPI_EBS_OIDC_URL"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/brapi_ebs_oidc_url_title"
+            android:summary="%s"
+            app:isPreferenceVisible="false" />
+
     </PreferenceCategory>
 
     <PreferenceCategory
